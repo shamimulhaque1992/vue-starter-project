@@ -1,7 +1,19 @@
-<script setup></script>
+<script setup>
+import Navbar from "@/components/Navbar.vue";
+import Hero from "@/components/Hero.vue";
+import HomeCards from "@/components/HomeCards.vue";
+import JobListing from "@/components/JobListing.vue";
+import { RouterView } from "vue-router";
+</script>
 
 <template>
-  <div>
-    <h1 class="text-2xl">sdfs</h1>
-  </div>
+  <Navbar />
+  <RouterView />
+  <!--
+    <Hero
+    title="Find Your Dream Job Here!"
+    subtitle="Find Job That Fits Your Skills and Needs!"
+  />
+  <HomeCards />
+  <JobListing limit="3" :showButton="true" /> -->
 </template>
