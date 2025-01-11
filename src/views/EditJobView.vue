@@ -1,9 +1,12 @@
 <script setup>
 import axios from "axios";
-import { reactive } from "vue";
-import { useRouter } from "vue-router";
+import { reactive, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 const router = useRouter();
+const route = useRoute();
+
+const jobId = route.params.id;
 
 const form = reactive({
   type: "Full-Time",
@@ -18,9 +21,14 @@ const form = reactive({
     contactPhone: "",
   },
 });
+
+const state = reactive({
+  job: {},
+  isLoading: false,
+});
 const toast = useToast();
 const onsubmit = async () => {
-  const newJob = {
+  const updatedJob = {
     type: form.type,
     title: form.title,
     location: form.location,
@@ -34,8 +42,8 @@ const onsubmit = async () => {
     },
   };
   try {
-    const response = await axios.post(`/api/jobs`, newJob);
-    toast.success("Job Added Successfully!", {
+    const response = await axios.put(`/api/jobs/${jobId}`, updatedJob);
+    toast.success("Job Updated Successfully!", {
       position: "top-right",
       timeout: 5000,
       closeOnClick: true,
@@ -67,6 +75,22 @@ const onsubmit = async () => {
     });
   }
 };
+
+onMounted(async () => {
+  try {
+    const response = await axios.get(`/api/jobs/${jobId}`);
+    state.job = response.data;
+    form.type = state.job.type;
+    form.title = state.job.title;
+    form.description = state.job.description;
+    form.salary = state.job.salary;
+    form.location = state.job.location;
+    form.company.name = state.job.company.name;
+    form.company.description = state.job.company.description;
+    form.company.contactEmail = state.job.company.contactEmail;
+    form.company.contactPhone = state.job.company.contactPhone;
+  } catch (error) {}
+});
 </script>
 
 <template>
@@ -76,7 +100,7 @@ const onsubmit = async () => {
         class="bg-white px-6 py-8 mb-4 shadow-md rounded-md border m-4 md:m-0"
       >
         <form @submit.prevent="onsubmit">
-          <h2 class="text-3xl text-center font-semibold mb-6">Add Job</h2>
+          <h2 class="text-3xl text-center font-semibold mb-6">Edit Job</h2>
 
           <div class="mb-4">
             <label for="type" class="block text-gray-700 font-bold mb-2"
@@ -231,7 +255,7 @@ const onsubmit = async () => {
               class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline"
               type="submit"
             >
-              Add Job
+              Update Job
             </button>
           </div>
         </form>
